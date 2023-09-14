@@ -1,19 +1,20 @@
-//Git hub actions
-name: Run unit tests
+name: Run Unit Tests
+
 on: [push]
 
 jobs:
   run-unit-tests:
-    name: Run unit tests
-    runs-on: ubuntu-latest # Linux
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
 
-    steps: 
-      - uses: actions/checkout@v2 # Checkout the code in the action workspace
-      - uses: actions/setup-node@v3 # Setup node
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: 18
           cache: 'npm'
 
-      -run: npm ci # Install dependencies
+      - run: npm ci
 
-      -run: npm run test # Run tests
+      - run: npm run test
