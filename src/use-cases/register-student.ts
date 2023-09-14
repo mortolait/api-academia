@@ -2,17 +2,24 @@ import { StudentRepository } from "../repositories/student-repository";
 import { StudentAlreadyExistisError } from "./errors/student-already-exists-error";
 
 interface studentRequestBody {
-  id?: string;
-  name: string;
-  last_name: string;
-  date_of_birth?: Date | string | null;
-  sex?: studentSex | null;
-  phone: string;
-  email: string;
-  enrollment_date?: Date | string | null;
-  expiration_date?: Date | string | null;
-  plan?: string | null;
-  status?: studentStatus;
+	fullName: string;
+	dob?: Date | null;
+	sex?: "male" | "female" | "other" | null;
+	address?: string;
+	phone: string;
+	email: string;
+	emergencyContact?: string;
+	medicalHistory?: string;
+	medications?: string;
+	exerciseRestrictions?: string;
+	startDate?: Date | null | string;
+	plan?: string | null;
+	interests?: string;
+	paymentMethod?: string | null;
+	expirationDate?: Date | null | string;
+	goals?: string | null;
+	referral?: string | null;
+	status: studentStatus;
 }
 
 enum studentStatus {
@@ -21,25 +28,27 @@ enum studentStatus {
     deleted = "excluido",
     suspended = "suspenso"
 }
-
-enum studentSex {
-    masculino = "masculino",
-    feminino = "feminino",
-    outro = "outro",
-} 
 export class RegisterStudentUseCase {
 	constructor(private studentRepository: StudentRepository) {}
 
 	async execute({
-		name,
-		last_name,
-		email,
-		date_of_birth,
-		enrollment_date,
-		expiration_date,
+		fullName,
+		dob,
+		sex,
+		address,
 		phone,
+		email,
+		emergencyContact,
+		medicalHistory,
+		medications,
+		exerciseRestrictions,
+		startDate,
 		plan,
-		sex
+		paymentMethod,
+		expirationDate,
+		goals,
+		referral,
+
 	}: studentRequestBody) {
 
 		const studentSameEmail = await this.studentRepository.findByEmail(email);
@@ -49,15 +58,22 @@ export class RegisterStudentUseCase {
 
 		try {
 			const studentRegister =	await this.studentRepository.create({
-				name,
-				last_name,
+				full_name: fullName,
 				email,
-				date_of_birth,
-				enrollment_date,
-				expiration_date,
+				date_of_birth: dob?new Date(dob):null,
+				start_date: startDate?new Date(startDate):null,
+				expiration_date : expirationDate?new Date(expirationDate):null,
 				phone,
 				plan,
 				sex,
+				address,
+				emergency_contact: emergencyContact,
+				medical_history: medicalHistory,
+				medications,
+				exercise_restrictions: exerciseRestrictions,
+				goals: goals,
+				payment_method: paymentMethod,
+				referral,
 				status: "ativo",
 			});
 

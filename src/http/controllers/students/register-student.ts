@@ -6,41 +6,63 @@ import { StudentAlreadyExistisError } from "../../../use-cases/errors/student-al
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
 	const createBodySchema = z.object({
-		name: z.string(),
-		last_name: z.string(),
-		date_of_birth: z.union([z.date(), z.string()]).nullable().optional(),
-		sex: z.enum(["masculino", "feminino", "outro"]).nullable(),
+		fullName: z.string(),
+		dob: z.union([z.date(), z.string()]).nullable().optional(),
+		sex: z.string().nullable().optional(),
+		address: z.string(),
 		phone: z.string(),
 		email: z.string(),
-		enrollment_date: z.union([z.date(), z.string()]).nullable().optional(),
+		emergencyContact: z.string(),
+		medicalHistory: z.string(),
+		medications: z.string(),
+		exerciseRestrictions: z.string(),
+		startDate: z.union([z.date(), z.string()]).nullable().optional(),
 		expiration_date: z.union([z.date(), z.string()]).nullable().optional(),
 		plan: z.string().nullable(),
+		goals: z.string().nullable(),
+		referral: z.string().nullable().optional(),
+		paymentMethod: z.string().nullable(),
+		expirationDate: z.union([z.date(), z.string()]).nullable().optional(),
 	});
 
 	const {
-		name,
-		last_name,
-		email,
-		phone,
-		plan,
+		fullName,
+		dob,
 		sex,
-		date_of_birth,
-		enrollment_date,
-		expiration_date,
+		address,
+		phone,
+		email,
+		emergencyContact,
+		medicalHistory,
+		medications,
+		exerciseRestrictions,
+		startDate,
+		plan,
+		paymentMethod,
+		expirationDate,
+		goals,
+		referral
 	} = createBodySchema.parse(request.body);
 
 	try {
 		const createStudentUseCase = makeRegisterStudentUseCase();
 		const student = await createStudentUseCase.execute({
-			name,
-			last_name,
-			email,
-			phone,
-			plan,
+			fullName,
+			dob,
 			sex,
-			date_of_birth,
-			enrollment_date,
-			expiration_date,
+			address,
+			phone,
+			email,
+			emergencyContact,
+			medicalHistory,
+			medications,
+			exerciseRestrictions,
+			startDate,
+			plan,
+			paymentMethod,
+			expirationDate,
+			goals,
+			referral
 		});
 
 		return reply.status(201).send(student);

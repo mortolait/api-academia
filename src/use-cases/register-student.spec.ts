@@ -13,10 +13,10 @@ describe ("Register student", () => {
 	it("Should register student ", async () => {
         
 		const student = {
-			name: "joao da silva",
-			last_name: "da silva",
+			fullName: "Joao da silva",
 			email: "email@teste.com",
 			phone: "999999999",
+			status: "active"
 		};
 
 		const { studentRegister } =  await sut.execute(student);
@@ -27,18 +27,18 @@ describe ("Register student", () => {
 	it("should not register student with same email", async () => {
 
 		await sut.execute({
-			name: "Joao",
-			last_name: "da silva",
+			fullName: "Joao",
 			email: "email@joao.com",
 			phone: "999999999",
+			status: "ativo"
 		});
 
 		await expect(()=> 
 			sut.execute({
-				name: "joao da silva",
-				last_name: "da silva",
+				fullName: "Joao",
 				email: "email@joao.com",
-				phone: "999999999"
+				phone: "999999999",
+				status: "ativo"
 			})
 		).rejects.toBeInstanceOf(Error);
 	});

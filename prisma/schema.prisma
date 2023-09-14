@@ -59,10 +59,13 @@ model Student{
   expiration_date DateTime?
   medical_history String?
   medications String?
-  exerciseRestrictions String?
+  emergency_contact String?
+  exercise_restrictions String?
   plan String?
+  payment_method String?
   status Status?
   create_at DateTime @default(now())
-
+  goals String?
+  referral String?
   @@map("Students")
 }
