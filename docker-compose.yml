@@ -1,0 +1,12 @@
+
+version: '3'
+
+services:
+  api-academia-pg:
+    image: bitnami/postgresql:latest
+    environment:
+      - POSTGRESQL_USERNAME=linusacademia
+      - POSTGRESQL_PASSWORD=password123
+      - POSTGRESQL_DATABASE=academia
+    ports:
+      - '8084:5432'

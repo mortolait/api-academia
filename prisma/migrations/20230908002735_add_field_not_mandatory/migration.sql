@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Students" ALTER COLUMN "date_of_birth" DROP NOT NULL,
+ALTER COLUMN "sex" DROP NOT NULL,
+ALTER COLUMN "enrollment_date" DROP NOT NULL,
+ALTER COLUMN "expiration_date" DROP NOT NULL,
+ALTER COLUMN "plan" DROP NOT NULL,
+ALTER COLUMN "status" DROP NOT NULL;
