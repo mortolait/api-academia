@@ -11,7 +11,6 @@ describe ("Register student", () => {
 		sut = new RegisterStudentUseCase(studentRepository);
 	});
 	it("Should register student ", async () => {
-        
 		const student = {
 			fullName: "Joao da silva",
 			email: "email@teste.com",
@@ -30,7 +29,7 @@ describe ("Register student", () => {
 			fullName: "Joao",
 			email: "email@joao.com",
 			phone: "999999999",
-			status: "ativo"
+			status: "active"
 		});
 
 		await expect(()=> 
@@ -38,7 +37,7 @@ describe ("Register student", () => {
 				fullName: "Joao",
 				email: "email@joao.com",
 				phone: "999999999",
-				status: "ativo"
+				status: "active"
 			})
 		).rejects.toBeInstanceOf(Error);
 	});

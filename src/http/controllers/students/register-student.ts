@@ -8,7 +8,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 	const createBodySchema = z.object({
 		fullName: z.string(),
 		dob: z.union([z.date(), z.string()]).nullable().optional(),
-		sex: z.string().nullable().optional(),
+		sex: z.enum(["male", "female", "other"]).nullable().optional(),
 		address: z.string(),
 		phone: z.string(),
 		email: z.string(),

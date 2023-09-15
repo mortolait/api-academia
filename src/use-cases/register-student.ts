@@ -3,7 +3,7 @@ import { StudentAlreadyExistisError } from "./errors/student-already-exists-erro
 
 interface studentRequestBody {
 	fullName: string;
-	dob?: Date | null;
+	dob?: Date | string | null;
 	sex?: "male" | "female" | "other" | null;
 	address?: string;
 	phone: string;
@@ -19,7 +19,7 @@ interface studentRequestBody {
 	expirationDate?: Date | null | string;
 	goals?: string | null;
 	referral?: string | null;
-	status: studentStatus;
+	status?: studentStatus;
 }
 
 enum studentStatus {
