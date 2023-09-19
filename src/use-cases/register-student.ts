@@ -20,6 +20,7 @@ interface studentRequestBody {
 	goals?: string | null;
 	referral?: string | null;
 	status?: studentStatus;
+	user_id: string;
 }
 
 enum studentStatus {
@@ -48,7 +49,7 @@ export class RegisterStudentUseCase {
 		expirationDate,
 		goals,
 		referral,
-
+		user_id ,
 	}: studentRequestBody) {
 
 		const studentSameEmail = await this.studentRepository.findByEmail(email);
@@ -75,6 +76,7 @@ export class RegisterStudentUseCase {
 				payment_method: paymentMethod,
 				referral,
 				status: "ativo",
+				user_id
 			});
 
 			return {

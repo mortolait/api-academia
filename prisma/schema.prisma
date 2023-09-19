@@ -35,6 +35,8 @@ model User {
   password_hash String
   create_at DateTime @default(now())
   role Role @default(MEMBER)
+  gyms Gym[] 
+  students Student[]
 }
 
 model Gym {
@@ -44,7 +46,10 @@ model Gym {
   phone       String?
   latitude    Decimal
   longitude   Decimal
-
+  create_at   DateTime @default(now())
+  user User @relation(fields: [user_id], references: [id])
+  user_id     String
+  
   @@map("gyms")
 }
 model Student{
@@ -67,5 +72,7 @@ model Student{
   create_at DateTime @default(now())
   goals String?
   referral String?
+  user User @relation(fields: [user_id], references: [id])
+  user_id String
   @@map("Students")
 }

@@ -1,4 +1,4 @@
-import { StudentRepository } from "@/repositories/student-repository";
+import { StudentRepository } from "../repositories/student-repository";
 import { Student } from "@prisma/client";
 
 interface StudentUseCaseResponse{

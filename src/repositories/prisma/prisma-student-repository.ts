@@ -30,8 +30,21 @@ export class PrismaStudentRepository implements StudentRepository {
 
         return student;
     }
-    findAll():Promise<Student[]>{
-        const students = prisma.student.findMany();
+    async findAll(id: string):Promise<Student[]>{
+        const students = await prisma.student.findMany({
+            where:{
+                user_id: id
+            }
+        });
         return students;
+    }
+    async deleteById(id: string): Promise<Student> {  
+        const student = await prisma.student.delete({
+            where:{
+                id
+            }
+        });
+
+        return student;
     }
 }

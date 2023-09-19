@@ -22,9 +22,9 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 		goals: z.string().nullable(),
 		referral: z.string().nullable().optional(),
 		paymentMethod: z.string().nullable(),
-		expirationDate: z.union([z.date(), z.string()]).nullable().optional(),
+		expirationDate: z.union([z.date(), z.string()]).nullable().optional()
 	});
-
+	const { sub } = request.user;
 	const {
 		fullName,
 		dob,
@@ -41,10 +41,11 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 		paymentMethod,
 		expirationDate,
 		goals,
-		referral
+		referral,
 	} = createBodySchema.parse(request.body);
 
 	try {
+
 		const createStudentUseCase = makeRegisterStudentUseCase();
 		const student = await createStudentUseCase.execute({
 			fullName,
@@ -62,7 +63,8 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 			paymentMethod,
 			expirationDate,
 			goals,
-			referral
+			referral,
+			user_id: sub
 		});
 
 		return reply.status(201).send(student);
