@@ -16,7 +16,7 @@ jobs:
           POSTGRESQL_PASSWORD: password123
           POSTGRESQL_DATABASE: academia
         ports:
-          - 8084:5432
+          - 5432:5432
 
     steps:
       - uses: actions/checkout@v2
