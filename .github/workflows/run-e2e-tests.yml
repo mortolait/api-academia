@@ -15,7 +15,7 @@ jobs:
           POSTGRESQL_USERNAME: linusacademia
           POSTGRESQL_PASSWORD: password123
           POSTGRESQL_DATABASE: academia
-        ports: '8084'
+        ports: 8084
 
     steps:
       - uses: actions/checkout@v2
