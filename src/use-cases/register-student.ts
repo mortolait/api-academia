@@ -16,7 +16,7 @@ interface studentRequestBody {
 	plan?: string | null;
 	interests?: string;
 	paymentMethod?: string | null;
-	expirationDate?: Date | null | string;
+	expirationDate?: number | null;
 	goals?: string | null;
 	referral?: string | null;
 	status?: studentStatus;
@@ -63,7 +63,7 @@ export class RegisterStudentUseCase {
 				email,
 				date_of_birth: dob?new Date(dob):null,
 				start_date: startDate?new Date(startDate):null,
-				expiration_date : expirationDate?new Date(expirationDate):null,
+				expiration_date : expirationDate,
 				phone,
 				plan,
 				sex,

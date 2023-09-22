@@ -5,11 +5,13 @@ import { verifyUserRole } from "../../middlewares/verify-user-role";
 import { getStudentById } from "./get-students-by-id";
 import { getStudents } from "./get-students";
 import { deleteStudentById } from "./delete-student-by-id";
+import { updateStudent } from "./update-student";
 
 export async function studentRoutes(app: FastifyInstance){
 	app.addHook("onRequest", verifyJwt);
 	app.post("/students", {onRequest: [verifyUserRole("ADMIN")]},create);
 	app.get("/students", {onRequest: [verifyUserRole("ADMIN")]},getStudents);
 	app.get("/students/:id", {onRequest: [verifyUserRole("ADMIN")]},getStudentById);
+	app.put("/students/:id", {onRequest: [verifyUserRole("ADMIN")]},updateStudent);
 	app.delete("/students/:id", {onRequest: [verifyUserRole("ADMIN")]},deleteStudentById);
 }	

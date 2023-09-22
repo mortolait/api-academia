@@ -22,7 +22,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 		goals: z.string().nullable(),
 		referral: z.string().nullable().optional(),
 		paymentMethod: z.string().nullable(),
-		expirationDate: z.union([z.date(), z.string()]).nullable().optional()
+		expirationDate: z.union([z.number(), z.string()]).nullable().optional()
 	});
 	const { sub } = request.user;
 	const {

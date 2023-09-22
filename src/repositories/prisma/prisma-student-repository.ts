@@ -38,12 +38,35 @@ export class PrismaStudentRepository implements StudentRepository {
         });
         return students;
     }
+    async updateById(id: string, data: Prisma.StudentUpdateInput): Promise<Student> {
+        console.log({id,data});
+        const student = await prisma.student.update({
+            where:{
+                id
+            },
+            data
+        });
+
+        return student;
+    }
     async deleteById(id: string): Promise<Student> {  
         const student = await prisma.student.delete({
             where:{
                 id
             }
         });
+
+        return student;
+    }
+    async findByEmailAndId(email: string, id: string): Promise<Student | null> {
+        const student = await prisma.student.findFirst({
+            where:{
+                email,
+                id:{
+                    not:id
+                }
+            }
+        })
 
         return student;
     }

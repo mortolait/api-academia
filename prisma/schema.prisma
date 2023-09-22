@@ -52,6 +52,25 @@ model Gym {
   
   @@map("gyms")
 }
+
+model Intructor{
+  id String @id @default(uuid())
+  full_name String
+  date_of_birth DateTime?
+  education String?
+  certifications String?
+  phone String
+  email String @unique()
+  address String?
+  start_date DateTime?
+  status Status?
+  sex Sex?
+  salary Float?
+  create_at DateTime @default(now())
+  user_id String
+  
+  @@map("Intructors")
+}
 model Student{
   id String @id @default(uuid())
   full_name String
@@ -61,7 +80,7 @@ model Student{
   email String @unique()
   address String?
   start_date DateTime?
-  expiration_date DateTime?
+  expiration_date Int?
   medical_history String?
   medications String?
   emergency_contact String?
