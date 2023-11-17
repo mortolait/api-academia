@@ -5,22 +5,19 @@ interface studentRequestBody {
 	fullName: string;
 	dob?: Date | string | null;
 	sex?: "male" | "female" | "other" | null;
-	address?: string;
 	phone: string;
 	email: string;
 	emergencyContact?: string;
 	medicalHistory?: string;
 	medications?: string;
 	exerciseRestrictions?: string;
-	startDate?: Date | null | string;
-	plan?: string | null;
-	interests?: string;
-	paymentMethod?: string | null;
-	expirationDate?: number | null;
+	interests?: string
 	goals?: string | null;
 	referral?: string | null;
 	status?: studentStatus;
 	user_id: string;
+	type?: 'client' | 'lead'
+	how_arrived?: string
 }
 
 enum studentStatus {
@@ -36,20 +33,17 @@ export class RegisterStudentUseCase {
 		fullName,
 		dob,
 		sex,
-		address,
 		phone,
 		email,
 		emergencyContact,
 		medicalHistory,
 		medications,
 		exerciseRestrictions,
-		startDate,
-		plan,
-		paymentMethod,
-		expirationDate,
 		goals,
 		referral,
-		user_id ,
+		user_id,
+		type,
+		how_arrived
 	}: studentRequestBody) {
 
 		const studentSameEmail = await this.studentRepository.findByEmail(email);
@@ -62,21 +56,18 @@ export class RegisterStudentUseCase {
 				full_name: fullName,
 				email,
 				date_of_birth: dob?new Date(dob):null,
-				start_date: startDate?new Date(startDate):null,
-				expiration_date : expirationDate,
 				phone,
-				plan,
 				sex,
-				address,
 				emergency_contact: emergencyContact,
 				medical_history: medicalHistory,
 				medications,
 				exercise_restrictions: exerciseRestrictions,
 				goals: goals,
-				payment_method: paymentMethod,
 				referral,
 				status: "ativo",
-				user_id
+				user_id,
+				type,
+				how_arrived
 			});
 
 			return {

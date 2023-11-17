@@ -34,6 +34,9 @@ export class PrismaStudentRepository implements StudentRepository {
         const students = await prisma.student.findMany({
             where:{
                 user_id: id
+            },
+            orderBy:{
+                full_name:"asc"
             }
         });
         return students;
@@ -69,5 +72,32 @@ export class PrismaStudentRepository implements StudentRepository {
         })
 
         return student;
+    }
+    convertLead(id: string): Promise<Student> {
+        const student = prisma.student.update({
+            where:{
+                id
+            },
+            data:{
+                type:"client"
+            }
+        });
+
+        return student;
+    }
+    async FindByName(id: string, namePart: string):Promise<Student[]>{
+        const students = await prisma.student.findMany({
+            where:{
+                user_id: id,
+                full_name: {
+                    contains: namePart,
+                    mode: "insensitive"
+                }
+            },
+            orderBy:{
+                full_name:"asc"
+            }
+        });
+        return students;
     }
 }

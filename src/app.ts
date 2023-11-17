@@ -7,6 +7,10 @@ import cors from "@fastify/cors";
 import { usersRoutes } from "./http/controllers/users/routes";
 import { env } from "./env";
 import { studentRoutes } from "./http/controllers/students/routes";
+import { contractRoutes } from "./http/controllers/contracts/routes"
+import { productRoutes } from "./http/controllers/product/routes";
+import { serviceRoutes } from "./http/controllers/provided-service/routes";
+
 export const app = fastify();
 app.register(cors,{
 	origin: "*",
@@ -29,7 +33,9 @@ app.register(fastifyCookie);
 
 app.register(studentRoutes);
 app.register(usersRoutes);
-
+app.register(contractRoutes);
+app.register(productRoutes);
+app.register(serviceRoutes)
 
 app.setErrorHandler((error, request, reply) => {
 	if (error instanceof ZodError) {

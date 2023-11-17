@@ -8,40 +8,33 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 	const createBodySchema = z.object({
 		fullName: z.string(),
 		dob: z.union([z.date(), z.string()]).nullable().optional(),
-		sex: z.enum(["male", "female", "other"]).nullable().optional(),
-		address: z.string(),
+		sex: z.enum(["male", "female", "other"]).nullable().optional(),     
 		phone: z.string(),
 		email: z.string(),
 		emergencyContact: z.string(),
 		medicalHistory: z.string(),
 		medications: z.string(),
 		exerciseRestrictions: z.string(),
-		startDate: z.union([z.date(), z.string()]).nullable().optional(),
-		expiration_date: z.union([z.date(), z.string()]).nullable().optional(),
-		plan: z.string().nullable(),
 		goals: z.string().nullable(),
 		referral: z.string().nullable().optional(),
-		paymentMethod: z.string().nullable(),
-		expirationDate: z.union([z.number(), z.string()]).nullable().optional()
+		type: z.enum(["client", "lead"]).optional(),
+		how_arrived: z.string().optional()
 	});
 	const { sub } = request.user;
 	const {
 		fullName,
 		dob,
 		sex,
-		address,
 		phone,
 		email,
 		emergencyContact,
 		medicalHistory,
 		medications,
 		exerciseRestrictions,
-		startDate,
-		plan,
-		paymentMethod,
-		expirationDate,
 		goals,
 		referral,
+		type,
+		how_arrived
 	} = createBodySchema.parse(request.body);
 
 	try {
@@ -51,20 +44,17 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 			fullName,
 			dob,
 			sex,
-			address,
 			phone,
 			email,
 			emergencyContact,
 			medicalHistory,
 			medications,
 			exerciseRestrictions,
-			startDate,
-			plan,
-			paymentMethod,
-			expirationDate,
 			goals,
 			referral,
-			user_id: sub
+			user_id: sub,
+			type,
+			how_arrived
 		});
 
 		return reply.status(201).send(student);

@@ -28,6 +28,20 @@ enum Status {
   suspenso 
 }
 
+enum FormOfContact {
+  personal
+  email
+  phone
+  whatsapp
+  facebook
+  instagram
+  other
+}
+
+enum Type { 
+  lead
+  client
+}
 model User {
   id    String @id @default(uuid())
   name  String
@@ -35,8 +49,6 @@ model User {
   password_hash String
   create_at DateTime @default(now())
   role Role @default(MEMBER)
-  gyms Gym[] 
-  students Student[]
 }
 
 model Gym {
@@ -47,9 +59,8 @@ model Gym {
   latitude    Decimal
   longitude   Decimal
   create_at   DateTime @default(now())
-  user User @relation(fields: [user_id], references: [id])
   user_id     String
-  
+
   @@map("gyms")
 }
 
@@ -76,22 +87,108 @@ model Student{
   full_name String
   date_of_birth DateTime?
   sex Sex?
+  document String?
   phone String
   email String @unique()
-  address String?
-  start_date DateTime?
-  expiration_date Int?
   medical_history String?
   medications String?
   emergency_contact String?
   exercise_restrictions String?
-  plan String?
-  payment_method String?
   status Status?
+  start_date DateTime?
   create_at DateTime @default(now())
   goals String?
   referral String?
-  user User @relation(fields: [user_id], references: [id])
+  how_arrived String?
   user_id String
+  type Type?
   @@map("Students")
+}
+
+//contract
+model Contract{
+  id String @id @default(uuid())
+  code String
+  active Boolean @default(true)
+  description String
+  installments Int
+  amount Float
+  amount_per_installment Float
+  create_at DateTime @default(now())
+  user_id String
+
+  contractsOnSale ContractOnSale[]
+
+  @@map("Contracts")
+}
+
+model Sale{
+  id String @id @default(uuid())
+  create_at DateTime @default(now())
+  user_id String
+  total_amount Float
+
+  products ProductOnSale[]
+
+  contracts ContractOnSale[]
+
+  services ServiceOnSale[]
+  @@map("Sales")
+}
+model ProductOnSale {
+  saleId String
+  productId String
+
+  sale Sale @relation(fields: [saleId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  @@id([saleId, productId])
+}
+
+model ContractOnSale {
+  saleId String
+  contractId String
+
+  sale Sale @relation(fields: [saleId], references: [id])
+  contract Contract @relation(fields: [contractId], references: [id])
+  @@id([saleId])
+
+}
+
+model ServiceOnSale {
+  saleId String
+  serviceId String
+  sale Sale @relation(fields: [saleId], references: [id])
+  service Service @relation(fields: [serviceId], references: [id])
+
+  @@id([saleId,serviceId])
+}
+model Product{
+  id String @id @default(uuid())
+  description String?
+  code String @unique()
+  selling_price Float
+  purchase_price Float
+  allows_sale_without_stock Boolean
+  current_quantity Float
+  minimum_quantity Float
+  create_at DateTime @default(now())
+  user_id String
+  active Boolean
+
+  productOnSale ProductOnSale[]
+  @@map("Products")
+}
+
+model Service{
+  id String @id @default(uuid())
+  title String
+  description String?
+  amount Float
+  create_at DateTime @default(now())
+  user_id String
+  active Boolean
+  code String
+
+  serviceOnSale ServiceOnSale[]
+  @@map("Services")
 }

@@ -4,7 +4,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 export async function updateStudent(request: FastifyRequest, reply: FastifyReply) {
-    console.log(request.body);
+    console.log({body: request.body});
 
     const createParamSchema = z.object({
 		id: z.string(),
@@ -13,7 +13,6 @@ export async function updateStudent(request: FastifyRequest, reply: FastifyReply
 		fullName: z.string(),
 		dob: z.union([z.date(), z.string()]).nullable().optional(),
 		sex: z.enum(["male", "female", "other"]).nullable().optional(),
-		address: z.string(),
 		phone: z.string(),
 		email: z.string(),
 		emergencyContact: z.string(),
@@ -21,31 +20,25 @@ export async function updateStudent(request: FastifyRequest, reply: FastifyReply
 		medications: z.string(),
 		exerciseRestrictions: z.string(),
 		startDate: z.union([z.date(), z.string()]).nullable().optional(),
-		expiration_date: z.union([z.date(), z.string()]).nullable().optional(),
-		plan: z.string().nullable(),
 		goals: z.string().nullable(),
 		referral: z.string().nullable().optional(),
-		paymentMethod: z.string().nullable(),
-		expirationDate: z.union([z.number(), z.string()]).nullable().optional()
+		type: z.enum(["client", "lead"]).nullable().optional(),
 	});
 	const { sub } = request.user;
 	const {
 		fullName,
 		dob,
-		address,
 		email,
 		emergencyContact,
 		exerciseRestrictions,
 		goals,
 		medicalHistory,
 		medications,
-		paymentMethod,
 		phone,
-		plan,
-		expirationDate,
         referral, 
         sex, 
-        startDate
+        startDate,
+		type
 	} = bodyEchema.parse(request.body);
 
     const { id } = createParamSchema.parse(request.params);
@@ -55,7 +48,6 @@ export async function updateStudent(request: FastifyRequest, reply: FastifyReply
         fullName,
         dob,
         sex,
-        address,
         phone,
         email,
         emergencyContact,
@@ -63,12 +55,10 @@ export async function updateStudent(request: FastifyRequest, reply: FastifyReply
         medications,
         exerciseRestrictions,
         startDate,
-        plan,
-        paymentMethod,
-        expirationDate,
         goals,
         referral,
-        user_id: sub
+        user_id: sub,
+		type,
        }) 
 
         return reply.status(200).send(student);
