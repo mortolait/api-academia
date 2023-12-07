@@ -32,7 +32,6 @@ export class PrismaProductRepository implements ProductRepository{
     }
 
     async updateById(id: string, data: Prisma.ProductUpdateInput) {
-        console.log({ data })
         const product = await prisma.product.update({
             where:{
                 id
@@ -40,5 +39,20 @@ export class PrismaProductRepository implements ProductRepository{
             data
         })
         return product    
+    }
+   async findByPartName(id: string, part_name: string){
+        const products = await prisma.product.findMany({
+            where:{
+                user_id: id,
+                description: {
+                    contains: part_name,
+                    mode: "insensitive"
+                }
+            },
+            orderBy:{
+                description: "asc"
+            }
+        })
+        return products
     }
 }

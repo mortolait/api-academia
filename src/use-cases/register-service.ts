@@ -1,5 +1,4 @@
 import { serviceRepository } from "@/repositories/service-repository";
-
 interface serviceRquestBody {
     title: string
     description: string

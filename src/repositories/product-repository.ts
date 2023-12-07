@@ -5,5 +5,5 @@ export interface ProductRepository{
     findAll(id: string):Promise<Product[]>
     updateById(id:string, data: Prisma.ProductUpdateInput): Promise<Product>
     findByCode(code: string): Promise<Product | null>
-    findByPartName(id: string, part_name: string): Promise<Product | null>
+    findByPartName(id: string, part_name: string): Promise<Product[] | null>
 }

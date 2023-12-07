@@ -25,7 +25,7 @@ enum Status {
   ativo
   inativo
   excluido
-  suspenso 
+  suspenso
 }
 
 enum FormOfContact {
@@ -38,21 +38,29 @@ enum FormOfContact {
   other
 }
 
-enum Type { 
+enum Type {
   lead
   client
 }
+
+enum StatusContract {
+  active
+  inactive
+  queue
+}
+
 model User {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique()
+  id            String   @id @default(uuid())
+  name          String
+  integration_wpp Boolean?
+  email         String   @unique()
   password_hash String
-  create_at DateTime @default(now())
-  role Role @default(MEMBER)
+  create_at     DateTime @default(now())
+  role          Role     @default(MEMBER)
 }
 
 model Gym {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
   description String?
   phone       String?
@@ -64,131 +72,179 @@ model Gym {
   @@map("gyms")
 }
 
-model Intructor{
-  id String @id @default(uuid())
-  full_name String
-  date_of_birth DateTime?
-  education String?
+model Intructor {
+  id             String    @id @default(uuid())
+  full_name      String
+  date_of_birth  DateTime?
+  education      String?
   certifications String?
-  phone String
-  email String @unique()
-  address String?
-  start_date DateTime?
-  status Status?
-  sex Sex?
-  salary Float?
-  create_at DateTime @default(now())
-  user_id String
-  
+  phone          String
+  email          String    @unique()
+  address        String?
+  start_date     DateTime?
+  status         Status?
+  sex            Sex?
+  salary         Float?
+  create_at      DateTime  @default(now())
+  user_id        String
+
   @@map("Intructors")
 }
-model Student{
-  id String @id @default(uuid())
-  full_name String
-  date_of_birth DateTime?
-  sex Sex?
-  document String?
-  phone String
-  email String @unique()
-  medical_history String?
-  medications String?
-  emergency_contact String?
+
+model Student {
+  id                    String           @id @default(uuid())
+  full_name             String
+  date_of_birth         DateTime?
+  sex                   Sex?
+  document              String?
+  phone                 String
+  email                 String           @unique()
+  medical_history       String?
+  medications           String?
+  emergency_contact     String?
   exercise_restrictions String?
-  status Status?
-  start_date DateTime?
-  create_at DateTime @default(now())
-  goals String?
-  referral String?
-  how_arrived String?
-  user_id String
-  type Type?
+  status                Status?
+  start_date            DateTime?
+  create_at             DateTime         @default(now())
+  goals                 String?
+  referral              String?
+  how_arrived           String?
+  user_id               String
+  statusContract        String?
+  type                  Type?
+  contracts             ContractOnSale[]
+
   @@map("Students")
 }
 
 //contract
-model Contract{
-  id String @id @default(uuid())
-  code String
-  active Boolean @default(true)
-  description String
-  installments Int
-  amount Float
+model Contract {
+  id                     String   @id @default(uuid())
+  code                   String
+  active                 Boolean  @default(true)
+  description            String
+  installments           Int
+  amount                 Float
   amount_per_installment Float
-  create_at DateTime @default(now())
-  user_id String
+  create_at              DateTime @default(now())
+  user_id                String
 
   contractsOnSale ContractOnSale[]
 
   @@map("Contracts")
 }
 
-model Sale{
-  id String @id @default(uuid())
-  create_at DateTime @default(now())
-  user_id String
-  total_amount Float
+enum PaymentStatus {
+  PAID
+  PENDING
+  PARTIALLY_PAID
+}
 
-  products ProductOnSale[]
+model Sale {
+  id                 String           @id @default(uuid())
+  code               String
+  create_at          DateTime         @default(now())
+  idClient           String
+  user_id            String
+  total_amount       Float
+  valueDiscount      Float
+  total_received     Float
+  statusPayment      PaymentStatus    @default(PAID)
+  outstandingBalance Float            @default(0)
+  datePayment        DateTime         @default(now())
+  products           ProductOnSale[]
+  contracts          ContractOnSale[]
+  services           ServiceOnSale[]
+  payments           PaymentOnSale[]
 
-  contracts ContractOnSale[]
-
-  services ServiceOnSale[]
   @@map("Sales")
 }
-model ProductOnSale {
-  saleId String
-  productId String
 
-  sale Sale @relation(fields: [saleId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+model ProductOnSale {
+  id            String  @default(uuid())
+  saleId        String
+  productId     String
+  quantity      Float
+  valueDiscount Float
+  value         Float
+  id_client     String
+  sale          Sale    @relation(fields: [saleId], references: [id])
+  product       Product @relation(fields: [productId], references: [id])
+
   @@id([saleId, productId])
 }
 
 model ContractOnSale {
-  saleId String
-  contractId String
+  id            String         @default(uuid())
+  saleId        String
+  contractId    String
+  valueDiscount Float
+  value         Float
+  startDate     DateTime
+  endDate       DateTime
+  id_client     String
+  student       Student        @relation(fields: [id_client], references: [id])
+  status        StatusContract
+  sale          Sale           @relation(fields: [saleId], references: [id])
+  contract      Contract       @relation(fields: [contractId], references: [id])
 
-  sale Sale @relation(fields: [saleId], references: [id])
-  contract Contract @relation(fields: [contractId], references: [id])
   @@id([saleId])
-
 }
 
 model ServiceOnSale {
-  saleId String
-  serviceId String
-  sale Sale @relation(fields: [saleId], references: [id])
-  service Service @relation(fields: [serviceId], references: [id])
+  id            String  @default(uuid())
+  saleId        String
+  serviceId     String
+  quantity      Float
+  valueDiscount Float
+  value         Float
+  id_client     String
+  sale          Sale    @relation(fields: [saleId], references: [id])
+  service       Service @relation(fields: [serviceId], references: [id])
 
-  @@id([saleId,serviceId])
+  @@id([saleId, serviceId])
 }
-model Product{
-  id String @id @default(uuid())
-  description String?
-  code String @unique()
-  selling_price Float
-  purchase_price Float
+
+model PaymentOnSale {
+  id        String @default(uuid())
+  saleId    String
+  type      String
+  value     Float
+  id_client String
+  sale      Sale   @relation(fields: [saleId], references: [id])
+
+  @@id([id])
+}
+
+model Product {
+  id                        String   @id @default(uuid())
+  description               String?
+  code                      String   @unique()
+  selling_price             Float
+  purchase_price            Float
   allows_sale_without_stock Boolean
-  current_quantity Float
-  minimum_quantity Float
-  create_at DateTime @default(now())
-  user_id String
-  active Boolean
+  current_quantity          Float
+  minimum_quantity          Float
+  create_at                 DateTime @default(now())
+  user_id                   String
+  active                    Boolean
 
   productOnSale ProductOnSale[]
+
   @@map("Products")
 }
 
-model Service{
-  id String @id @default(uuid())
-  title String
+model Service {
+  id          String   @id @default(uuid())
+  title       String
   description String?
-  amount Float
-  create_at DateTime @default(now())
-  user_id String
-  active Boolean
-  code String
+  amount      Float
+  create_at   DateTime @default(now())
+  user_id     String
+  active      Boolean
+  code        String
 
   serviceOnSale ServiceOnSale[]
+
   @@map("Services")
 }

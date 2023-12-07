@@ -10,6 +10,7 @@ import { studentRoutes } from "./http/controllers/students/routes";
 import { contractRoutes } from "./http/controllers/contracts/routes"
 import { productRoutes } from "./http/controllers/product/routes";
 import { serviceRoutes } from "./http/controllers/provided-service/routes";
+import { saleRoutes } from "./http/controllers/sales/routes";
 
 export const app = fastify();
 app.register(cors,{
@@ -25,17 +26,17 @@ app.register(fastifyJwt,{
 		signed: false
 	},
 	sign:{
-		expiresIn: "10m",
+		expiresIn: "60m",
 	}
 });
 
 app.register(fastifyCookie);
-
 app.register(studentRoutes);
 app.register(usersRoutes);
 app.register(contractRoutes);
 app.register(productRoutes);
 app.register(serviceRoutes)
+app.register(saleRoutes)
 
 app.setErrorHandler((error, request, reply) => {
 	if (error instanceof ZodError) {

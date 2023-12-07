@@ -7,10 +7,10 @@ interface studentRequestBody {
 	sex?: "male" | "female" | "other" | null;
 	phone: string;
 	email: string;
-	emergencyContact?: string;
-	medicalHistory?: string;
-	medications?: string;
-	exerciseRestrictions?: string;
+	emergencyContact?: string | null;
+	medicalHistory?: string | null;
+	medications?: string | null;
+	exerciseRestrictions?: string | null;
 	interests?: string
 	goals?: string | null;
 	referral?: string | null;

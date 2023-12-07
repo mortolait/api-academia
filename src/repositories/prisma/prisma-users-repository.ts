@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { $Enums, Prisma } from "@prisma/client";
 import { UsersRepository } from "../users-repository";
 import { prisma } from "../../lib/prisma";
 
@@ -17,5 +17,13 @@ export class PrismaUsersRepository implements UsersRepository{
 			}
 		});	
 		return user;
+	}
+	async updateStatusWpp(id: string){
+		const user = await prisma.user.findUnique({
+			where:{
+				id
+			}
+		})
+		return user
 	}
 }
