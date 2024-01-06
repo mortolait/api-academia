@@ -1,9 +1,10 @@
+import { CashRegisterIsNotOpenError } from "@/use-cases/errors/cash-register-is-not-open-error";
 import { makeRegisterSaleUseCase } from "@/use-cases/factories/make-register-sale-use-case";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
-    console.log(request.body)
+    
     const createBodySchema = z.object({
         amount: z.number(),
         idClient: z.string().uuid(),
@@ -35,9 +36,10 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
         datePaymentOutstandingBalance: z.any()
     })
     const { sub } = request.user
-    console.log(request.body)
+    
     const { amount, idClient, itens, received, totalDiscount, totalReceived,code,hasOutstandingBalance,valueOutstandingBalance,datePaymentOutstandingBalance } = createBodySchema.parse(request.body)
-    console.log({itens: itens})
+    console.log({amount, idClient, itens, received, totalDiscount, totalReceived,code,hasOutstandingBalance,valueOutstandingBalance,datePaymentOutstandingBalance})
+    
     try {
         const createSaleUseCase = makeRegisterSaleUseCase()
         const sale = await createSaleUseCase.execute({
@@ -55,6 +57,8 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
         })
         return reply.status(201).send(sale)
     } catch (error) {
-
+        if(error instanceof CashRegisterIsNotOpenError){
+            return reply.status(400).send(error.message)
+        }
     }
 }

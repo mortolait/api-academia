@@ -27,7 +27,6 @@ export async function create(request: FastifyRequest,reply: FastifyReply){
         active
     } = createBodySchema.parse(request.body)
 
-    console.log(request.body)
 
     try {
         const registerProductUseCase = makeRegisterProductUseCase()

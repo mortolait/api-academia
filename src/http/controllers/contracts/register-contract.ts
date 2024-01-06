@@ -21,8 +21,6 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
         code,
         active
     } = createBodySchema.parse(request.body)
-
-    console.log({amount,description,installments})
     try {
         const registerContractUseCase = makeRegisterContractUseCase()
         const { contract } = await registerContractUseCase.execute({

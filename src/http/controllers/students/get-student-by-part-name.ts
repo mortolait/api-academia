@@ -9,10 +9,8 @@ export async function getStudentByPartName(request: FastifyRequest, reply: Fasti
     try {
         const { sub } = request.user;
         const { part_name } = bodyRequestSchema.parse(request.params)
-
         const getStudentByNameUseCase = makeGetStudentByPartNameUseCase()
         const students = await getStudentByNameUseCase.execute(sub,part_name)
-        console.log({ students })
         reply.status(200).send(students)
     } catch (error) {
         reply.status(500).send("Internal server error")

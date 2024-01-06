@@ -11,6 +11,8 @@ import { contractRoutes } from "./http/controllers/contracts/routes"
 import { productRoutes } from "./http/controllers/product/routes";
 import { serviceRoutes } from "./http/controllers/provided-service/routes";
 import { saleRoutes } from "./http/controllers/sales/routes";
+import { cashRegisterRoutes } from "./http/controllers/cash-register/routes";
+import { transactionCashRegisterRoutes } from "./http/controllers/cash-register-transaction/routes";
 
 export const app = fastify();
 app.register(cors,{
@@ -37,6 +39,8 @@ app.register(contractRoutes);
 app.register(productRoutes);
 app.register(serviceRoutes)
 app.register(saleRoutes)
+app.register(cashRegisterRoutes)
+app.register(transactionCashRegisterRoutes)
 
 app.setErrorHandler((error, request, reply) => {
 	if (error instanceof ZodError) {

@@ -43,6 +43,11 @@ enum Type {
   client
 }
 
+enum TypeCashRegister {
+  open
+  close
+}
+
 enum StatusContract {
   active
   inactive
@@ -50,13 +55,14 @@ enum StatusContract {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  name          String
+  id              String         @id @default(uuid())
+  name            String
   integration_wpp Boolean?
-  email         String   @unique()
-  password_hash String
-  create_at     DateTime @default(now())
-  role          Role     @default(MEMBER)
+  email           String         @unique()
+  password_hash   String
+  create_at       DateTime       @default(now())
+  role            Role           @default(MEMBER)
+  cashRegisters   CashRegister[]
 }
 
 model Gym {
@@ -92,20 +98,20 @@ model Intructor {
 }
 
 model Student {
-  id                    String           @id @default(uuid())
+  id                    String             @id @default(uuid())
   full_name             String
   date_of_birth         DateTime?
   sex                   Sex?
   document              String?
   phone                 String
-  email                 String           @unique()
+  email                 String             @unique()
   medical_history       String?
   medications           String?
   emergency_contact     String?
   exercise_restrictions String?
   status                Status?
   start_date            DateTime?
-  create_at             DateTime         @default(now())
+  create_at             DateTime           @default(now())
   goals                 String?
   referral              String?
   how_arrived           String?
@@ -113,6 +119,8 @@ model Student {
   statusContract        String?
   type                  Type?
   contracts             ContractOnSale[]
+  contacts              ContactOnStudent[]
+  Sale                  Sale[]
 
   @@map("Students")
 }
@@ -156,8 +164,22 @@ model Sale {
   contracts          ContractOnSale[]
   services           ServiceOnSale[]
   payments           PaymentOnSale[]
+  student            Student          @relation(fields: [idClient], references: [id])
+  idCashOpen         String
+  CashRegister       CashRegister?    @relation(fields: [idCashOpen], references: [id])
 
   @@map("Sales")
+}
+
+model ContactOnStudent {
+  id         String   @id @default(uuid())
+  id_student String
+  id_user    String
+  type       String
+  subject    String?
+  content    String
+  createAt   DateTime @default(now())
+  student    Student  @relation(fields: [id_student], references: [id])
 }
 
 model ProductOnSale {
@@ -175,7 +197,7 @@ model ProductOnSale {
 }
 
 model ContractOnSale {
-  id            String         @default(uuid())
+  id            String   @id @default(uuid())
   saleId        String
   contractId    String
   valueDiscount Float
@@ -183,12 +205,10 @@ model ContractOnSale {
   startDate     DateTime
   endDate       DateTime
   id_client     String
-  student       Student        @relation(fields: [id_client], references: [id])
-  status        StatusContract
-  sale          Sale           @relation(fields: [saleId], references: [id])
-  contract      Contract       @relation(fields: [contractId], references: [id])
-
-  @@id([saleId])
+  student       Student  @relation(fields: [id_client], references: [id])
+  status        String
+  sale          Sale     @relation(fields: [saleId], references: [id])
+  contract      Contract @relation(fields: [contractId], references: [id])
 }
 
 model ServiceOnSale {
@@ -235,16 +255,44 @@ model Product {
 }
 
 model Service {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  amount      Float
-  create_at   DateTime @default(now())
-  user_id     String
-  active      Boolean
-  code        String
-
+  id            String          @id @default(uuid())
+  title         String
+  description   String?
+  amount        Float
+  create_at     DateTime        @default(now())
+  user_id       String
+  active        Boolean
+  code          String
   serviceOnSale ServiceOnSale[]
 
   @@map("Services")
+}
+
+model CashRegister {
+  id                       String                    @id @default(uuid())
+  open_date                DateTime
+  close_date               DateTime?
+  initial_balance          Float
+  final_balance            Float
+  total_income             Float
+  total_expense            Float
+  user_id                  String
+  status                   TypeCashRegister          @default(close)
+  sales                    Sale[]
+  user                     User                      @relation(fields: [user_id], references: [id])
+  cashRegisterTransactions CashRegisterTransaction[]
+
+  @@map("cash_registers")
+}
+
+model CashRegisterTransaction {
+  id             String   @id @default(uuid())
+  name           String?
+  description    String?
+  paymentForm    String?
+  date_at        DateTime
+  type           String
+  value          Float
+  idCashRegister String
+  cashRegister CashRegister @relation(fields: [idCashRegister], references: [id])
 }

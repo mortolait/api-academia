@@ -1,10 +1,12 @@
-import { $Enums, Prisma } from "@prisma/client";
+import { $Enums, PaymentOnSale, Prisma } from "@prisma/client";
 import { SaleRepository } from "../sale-repository";
 import { prisma } from "@/lib/prisma";
 
 export class PrismaSaleRepository implements SaleRepository {
+    
     async create(data: any) {
-        console.log({ aqui: data })
+        console.log({ data })
+        let payments: PaymentOnSale[] = []; 
         const transaction = await prisma.$transaction(async (prisma) => {
             const client = await prisma.student.findUnique({
                 where: {
@@ -12,10 +14,23 @@ export class PrismaSaleRepository implements SaleRepository {
                 }
             })
             
+            console.log({ client })
             if (!client) {
                 throw new Error('Client not finded')
             }
             
+            const today = new Date();
+            today.setHours(0,0,0,0)
+            const cashRegister = await prisma.cashRegister.findFirst({
+                where: {
+                    user_id: data.user_id,
+                    open_date: {
+                        gte: today
+                    },
+                    status: 'open'
+                }
+            });
+
             const sale = await prisma.sale.create({
                 data: {
                     user_id: data.user_id,
@@ -26,15 +41,20 @@ export class PrismaSaleRepository implements SaleRepository {
                     outstandingBalance: data.valueOutstandingBalance,
                     total_received: data.totalReceived,
                     statusPayment: data.statusPayment,
-                    idClient: data.idClient
+                    idClient: data.idClient,
+                    idCashOpen: cashRegister?cashRegister.id:'',
+                },
+                include:{
+                    student: {
+                        select:{
+                            full_name: true
+                        }
+                    }
                 }
             })
-            
 
             for (const item of data.itens) {
-                
-                if (item.type === 'product') {
-                    
+                if (item.type === 'product') {  
                     const p = await prisma.productOnSale.create({
                         data: {
                             saleId: sale.id,
@@ -75,19 +95,18 @@ export class PrismaSaleRepository implements SaleRepository {
             }
             
             for (const item of data.received) {
-                
-                
-                await prisma.paymentOnSale.create({
+                const payment = await prisma.paymentOnSale.create({
                     data: {
                         type: item.type,
                         value: item.value,
                         saleId: sale.id,
                         id_client: data.idClient
                     }
-                })
+                });
+                payments.push(payment); 
             }
-
-            return sale;
+            console.log({ sale, payments })
+            return { sale, payments };;
         })
         return transaction
     }
@@ -118,5 +137,22 @@ export class PrismaSaleRepository implements SaleRepository {
 
     async getSaleContract(idClient: string){
         return null
+    }
+
+    async updateSale(id: string, data: Prisma.SaleUpdateInput){
+        const updatedSale = await prisma.sale.update({
+            where: {
+                id
+            },
+            data,
+            include:{
+                student:{
+                    select: {
+                        full_name: true
+                    }
+                }
+            }
+        })
+        return updatedSale
     }
 }

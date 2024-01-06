@@ -1,4 +1,4 @@
-import { Prisma,Student } from "@prisma/client";
+import { ContactOnStudent, Prisma,Student } from "@prisma/client";
 
 export interface StudentRepository{
     create(data: Prisma.StudentCreateInput): Promise<Student>
@@ -10,4 +10,6 @@ export interface StudentRepository{
     deleteById(id: string): Promise<Student>
     convertLead(id: string): Promise<Student>
     FindByName(id: string,namePart: string): Promise<Student[] | null>
+    addNewContact(data: any): Promise<ContactOnStudent>
+    getContactsById(id: string): Promise<ContactOnStudent[] | null>
 }

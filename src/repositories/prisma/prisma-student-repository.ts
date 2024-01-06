@@ -3,12 +3,6 @@ import { StudentRepository } from "../student-repository";
 
 import { prisma } from "../../lib/prisma";
 
-enum Status {
-    ativo,
-    inativo,
-    excluido,
-    suspenso
-}
 export class PrismaStudentRepository implements StudentRepository {
     async create(data: Prisma.StudentCreateInput) {
         const student: Student = await prisma.student.create({
@@ -29,53 +23,68 @@ export class PrismaStudentRepository implements StudentRepository {
 
     async findById(id: string): Promise<Student | null> {
         let student = await prisma.student.findUnique({
-            where: {
-                id
-            },
-            include: {
-                contracts: true
-            }
+            where: { id },
+            include: { contracts: true }
         });
-
+    
         if (student === null) {
             return null;
         }
-
+    
         const today = new Date();
-        let newStatus = 'contract_inactive'; // Define o status padrão como inativo
-
+        let newStudentStatus = 'contract_inactive'; // Status padrão do estudante
+    
+        // Atualiza o status dos contractOnSale
+        const contractUpdatePromises = student.contracts.map(contract => {
+            let newContractStatus = 'inactive'; // Status padrão do contrato
+            const startDate = new Date(contract.startDate);
+            const endDate = new Date(contract.endDate);
+    
+            if (startDate <= today && endDate > today) {
+                newContractStatus = 'active';
+            } else if (startDate > today) {
+                newContractStatus = 'queue';
+            }
+    
+            return prisma.contractOnSale.update({
+                where: { id: contract.id },
+                data: { status: newContractStatus }
+            });
+        });
+    
+        try {
+            await Promise.all(contractUpdatePromises);
+        } catch (error) {
+            console.error("Erro ao atualizar contractOnSale:", error);
+            // Opção: Você pode escolher tratar o erro ou rejeitar a operação
+        }
+    
+        // Processa contratos para determinar o status do estudante
         for (let contract of student.contracts) {
             const startDate = new Date(contract.startDate);
             const endDate = new Date(contract.endDate);
             const twoDaysBeforeEnd = new Date(endDate);
             twoDaysBeforeEnd.setDate(twoDaysBeforeEnd.getDate() - 2);
-            if (today >= twoDaysBeforeEnd && today < endDate) {
-                newStatus = 'contract_to_expire';
-                break; // Se um contrato prestes a expirar for encontrado, interrompe a iteração
-            }
+    
             if (startDate <= today && endDate > today) {
-                newStatus = 'contract_active';
-                break; // Se um contrato ativo for encontrado, interrompe a iteração
+                newStudentStatus = 'contract_active';
+                break;
             }
-
-
-
-
+            if (today >= twoDaysBeforeEnd && today < endDate) {
+                newStudentStatus = 'contract_to_expire';
+            }
         }
-
+    
+        // Atualiza o status do estudante na base de dados
         const studentUpdated = await prisma.student.update({
-            where: {
-                id: student.id
-            },
-            data: {
-                statusContract: newStatus
-            }
+            where: { id: student.id },
+            data: { statusContract: newStudentStatus },
+            include: { contracts: true }
         });
-
+    
+        
         return studentUpdated;
-    }
-
-
+    }   
     async findAll(id: string): Promise<Student[]> {
         const students = await prisma.student.findMany({
             where: {
@@ -87,7 +96,7 @@ export class PrismaStudentRepository implements StudentRepository {
         });
 
         const today = new Date();
-
+        
         for (const student of students) {
             if (student.type === 'client') {
                 if (student.contracts.length == 0) {
@@ -156,11 +165,8 @@ export class PrismaStudentRepository implements StudentRepository {
             });
         return sortedStudents;
     }
-
-
-
     async updateById(id: string, data: Prisma.StudentUpdateInput): Promise<Student> {
-        console.log({ id, data });
+        
         const student = await prisma.student.update({
             where: {
                 id
@@ -217,6 +223,22 @@ export class PrismaStudentRepository implements StudentRepository {
             }
         });
         return students;
+    }
+    async addNewContact(data: Prisma.ContactOnStudentCreateInput) {
+        const contactOnStudent = await prisma.contactOnStudent.create({
+            data
+        })
+        return contactOnStudent
+    }
+    async getContactsById(id: string){
+        
+        const contacts = await prisma.contactOnStudent.findMany({
+            where:{
+                id_student: id
+            }
+        })
+
+        return contacts
     }
 }
 

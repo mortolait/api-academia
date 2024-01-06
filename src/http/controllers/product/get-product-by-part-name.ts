@@ -3,7 +3,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 export async function getProductByPartName(request: FastifyRequest, reply: FastifyReply){
-    console.log({request})
     const getBodySchema = z.object({
         part_name: z.string()
     })

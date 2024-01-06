@@ -8,7 +8,6 @@ export async function getProducts(request: FastifyRequest, reply: FastifyReply){
     try {
         const getAllProducts = makeGetAllProducstUseCase()
         const products = await getAllProducts.execute(sub)
-        console.log( products )
         reply.status(200).send(products)
     } catch (err) {
         return reply.status(501).send(err);

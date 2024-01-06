@@ -4,8 +4,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 export async function updateStudent(request: FastifyRequest, reply: FastifyReply) {
-    console.log({body: request.body});
-
     const createParamSchema = z.object({
 		id: z.string(),
 	});

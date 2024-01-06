@@ -2,10 +2,7 @@ import { makeUpdateStatusWpp } from "@/use-cases/factories/make-update-status-wp
 import { FastifyReply, FastifyRequest } from "fastify";
 
 export function updateStatusWpp(request: FastifyRequest, reply: FastifyReply){
-    console.log({testeW :request})
-
     const { sub } = request.user;
-
     try {
         const updateStatusWppUseCase = makeUpdateStatusWpp()
         const updatedUser = updateStatusWppUseCase.execute(sub)

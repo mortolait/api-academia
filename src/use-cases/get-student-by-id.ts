@@ -9,7 +9,6 @@ export class GetStudentByIdUseCase{
 
 	async execute(id: string): Promise<StudentUseCaseResponse>{
 		const student = await this.studentRepository.findById(id);
-		console.log({ student });
 		return {
 			student
 		};
